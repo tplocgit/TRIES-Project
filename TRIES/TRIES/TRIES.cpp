@@ -24,12 +24,27 @@ NODE* Tree_ReadFromFile(string path);
 
 void Tree_Deallocate(NODE*& p_root);
 
-vector<string> Tree_GenerateWord(NODE* p_root, char* chars, int n);
+//vector<string> Tree_GenerateWord(NODE* p_root, char* chars, int n);
+
+void Tree_GetStrings(NODE* p_root, vector<string>& result, string word);
+
+vector<NODE> Tree_FindNodesWithPrefix(NODE*p_root, string word, string prefix);
+
+bool IsAvailable(string word, NODE* p_root);
 //--------------------------------------------------------------------
 
 int main() {
-	NODE* p_root = Tree_ReadFromFile("test.txt");
+	NODE* p_root = Tree_ReadFromFile("Test.txt");
+	string word;
+	cout << "Enter word: ";
+	cin >> word;
+	if (IsAvailable(word, p_root))
+		cout << "yes\n";
+	else cout << "no\n";
 	Tree_Deallocate(p_root);
+	if (IsAvailable(word, p_root))
+		cout << "yes\n";
+	else cout << "no\n";
 	system("pause");
 	return 0;
 }
@@ -41,6 +56,7 @@ void Tree_Deallocate(NODE*& p_root) {
 		if (p_root->m_nodes[i]) {
 			Tree_Deallocate(p_root->m_nodes[i]);
 			delete[] p_root->m_nodes[i];
+			p_root->m_nodes[i] = nullptr;
 		}
 	}
 }
@@ -90,4 +106,28 @@ NODE* Tree_ReadFromFile(string path) {
 		fin.close();
 	}
 	return p_root;
+}
+
+/*vector<string> Tree_GenerateWord(NODE* p_root, char* chars, int n) {
+
+}*/
+
+void Tree_GetStrings(NODE* p_root, vector<string>& result, string word) {
+
+}
+
+/*NODE FindKeyWithPrefix(string word, string prefix, int length) {
+
+}*/
+
+bool IsAvailable(string word, NODE* p_root) {
+	if (p_root && word.empty() && p_root->m_endWord)
+		return true;
+	else if(!p_root || word.empty())
+		return false;
+	int index = Tree_getIndex(word.front());
+	if (p_root && p_root->m_nodes[index]) {
+		return IsAvailable(word.substr(1, word.length() - 1), p_root->m_nodes[index]);
+	}
+	return false;
 }
