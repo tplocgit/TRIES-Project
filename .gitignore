@@ -33,8 +33,8 @@
 
 #
 *.pdf
-debug
-release
+Debug
+Release
 *.vs
 *.sln
 *.vcxproj
