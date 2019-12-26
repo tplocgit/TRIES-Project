@@ -31,8 +31,6 @@ vector<string> Tree_GenerateWord(NODE* p_root, string data);
 
 void Tree_GetStrings(NODE* p_root, vector<string>& result, string word);
 
-//vector<NODE> Tree_FindNodesWithPrefix(NODE* p_root, string word, string prefix);
-
 bool Tree_IsAvailable(string word, NODE* p_root);
 
 int TwoPower(int n);
@@ -149,10 +147,6 @@ NODE* Tree_ReadFromFile(string path) {
 	return p_root;
 }
 
-/*vector<string> Tree_GenerateWord(NODE* p_root, char* chars, int n) {
-
-}*/
-
 void Tree_GetStrings(NODE* p_root, vector<string>& result, string word) {
 	if (p_root) {
 		for (int i = 0; i < ALPHABET_CHARS; ++i) {
@@ -167,10 +161,6 @@ void Tree_GetStrings(NODE* p_root, vector<string>& result, string word) {
 		}
 	}
 }
-
-/*NODE FindKeyWithPrefix(string word, string prefix, int length) {
-
-}*/
 
 bool Tree_IsAvailable(string word, NODE* p_root) {
 	if (p_root && word.empty() && p_root->m_endWord)
