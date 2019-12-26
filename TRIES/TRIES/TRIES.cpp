@@ -238,7 +238,7 @@ vector<string> String_Generator(string s) {
 		for (string s : subArr) {
 			++count;
 			if (LOG_STATUS)
-				cout << "Permuting " << count << " sub string...";
+				cout << "Permuting " << count << "th sub string...";
 			if (s.length() >= 3) {
 				bool* checker = new bool[s.length()];
 				for (int i = 0; i < s.length(); ++i)
@@ -265,8 +265,11 @@ bool isExist(string s, vector<string> arr) {
 	if (LOG_STATUS)
 		cout << "Checking " << s << " in array....";
 	for (string a : arr)
-		if (s == a)
+		if (s == a) {
+			if (LOG_STATUS)
+				cout << "=> complete!\n";
 			return true;
+		}
 	if (LOG_STATUS)
 		cout << "=> complete!\n";
 	return false;
@@ -277,7 +280,7 @@ string RemoveSpace(string line) {
 		cout << "RemoveSpace working...\n";
 	string s;
 	for (char c : line)
-		if (c != ' ')
+		if ('a' <= c && c <= 'z')
 			s.push_back(c);
 	if (LOG_STATUS)
 		cout << "RemoveSpace complete!\n";
