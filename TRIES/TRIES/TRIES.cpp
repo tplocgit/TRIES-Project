@@ -6,7 +6,7 @@
 using namespace std;
 #define ALPHABET_CHARS 26
 #define MAX_LENGTH 10
-#define  LOG_STATUS true
+#define  LOG_STATUS false
 
 // Each node contains hash table with hash function h(k) = k - 97;
 //--------------------------------------------------------------------
@@ -46,6 +46,8 @@ vector<string> String_Generator(string s);
 bool isExist(string s, vector<string> arr);
 
 string RemoveSpace(string line);
+
+void cc(NODE* p_root, string data, vector<string>& result, string tmp, vector<bool> checker);
 //--------------------------------------------------------------------
 
 int main() {
@@ -53,7 +55,10 @@ int main() {
 	string line;
 	getline(cin, line, '\n');
 	string data = RemoveSpace(line);
-	vector<string> gen = Tree_GenerateWord(p_root, data);
+	vector<string> gen;
+	string tmp;
+	vector<bool> checker(data.length(), true);
+	cc(p_root, data, gen, tmp,checker);
 	cout << gen.size() << endl;
 	if (!gen.empty())
 		for (string s : gen)
@@ -265,8 +270,11 @@ bool isExist(string s, vector<string> arr) {
 	if (LOG_STATUS)
 		cout << "Checking " << s << " in array....";
 	for (string a : arr)
-		if (s == a)
+		if (s == a) {
+			if (LOG_STATUS)
+				cout << "=> complete!\n";
 			return true;
+		}
 	if (LOG_STATUS)
 		cout << "=> complete!\n";
 	return false;
@@ -282,4 +290,24 @@ string RemoveSpace(string line) {
 	if (LOG_STATUS)
 		cout << "RemoveSpace complete!\n";
 	return s;
+}
+
+void cc(NODE* p_root, string data, vector<string>& result, string tmp, vector<bool> checker) {
+	if (p_root) {
+		for (auto it = data.begin(); it != data.end(); ++it) {
+			int i = Tree_getIndex(*it);
+			int j = it - data.begin();
+			if (p_root->m_nodes[i] && checker[j]) {
+				tmp.push_back(*it);
+				checker[j] = false;
+				if (p_root->m_nodes[i]->m_endWord) {
+					if (!isExist(tmp, result))
+						result.push_back(tmp);
+				}
+				cc(p_root->m_nodes[i], data, result, tmp, checker);
+				tmp.pop_back();
+				checker[j] = true;
+			}
+		}
+	}
 }
