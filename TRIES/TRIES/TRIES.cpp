@@ -263,7 +263,7 @@ vector<string> String_Generator(string s) {
 
 bool isExist(string s, vector<string> arr) {
 	if (LOG_STATUS)
-		cout << "Checking in array....";
+		cout << "Checking " << s << " in array....";
 	for (string a : arr)
 		if (s == a)
 			return true;
