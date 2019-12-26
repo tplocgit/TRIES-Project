@@ -321,7 +321,7 @@ void Tree_RadixSort(vector<string>& data) {
 		if (it->length() > max)
 			max = it->length();
 	}
-	for (int i = 1; i <= max; ++i)
+	for (int i = 0; i < max; ++i)
 		Tree_CountingSort(data, i);
 }
 
