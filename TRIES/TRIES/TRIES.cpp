@@ -2,10 +2,11 @@
 #include<string>
 #include<fstream>
 #include<vector>
+#include<time.h>
 using namespace std;
-
 #define ALPHABET_CHARS 26
 #define MAX_LENGTH 10
+#define  LOG_STATUS true
 
 // Each node contains hash table with hash function h(k) = k - 97;
 //--------------------------------------------------------------------
@@ -63,11 +64,16 @@ int main() {
 }
 
 vector<string> Tree_GenerateWord(NODE* p_root, string data) {
+	if (LOG_STATUS) {
+		cout << "Tree_GenerateWord working...\n";
+	}
 	vector<string> gen = String_Generator(data);
 	vector<string> res;
 	for (auto it = gen.begin(); it != gen.end(); ++it)
 		if (Tree_IsAvailable(*it, p_root))
 			res.push_back(*it);
+	if (LOG_STATUS)
+		cout << "Tree_GenerateWord complete!\n";
 	return res;
 }
 
@@ -121,6 +127,8 @@ void Tree_InsertWord(NODE*& p_root, string word) {
 }
 
 NODE* Tree_ReadFromFile(string path) {
+	if (LOG_STATUS)
+		cout << "Tree_ReadFromFile working...\n";
 	ifstream fin;
 	NODE* p_root = nullptr;
 	fin.open(path);
@@ -136,6 +144,8 @@ NODE* Tree_ReadFromFile(string path) {
 		}
 		fin.close();
 	}
+	if (LOG_STATUS)
+		cout << "Tree_ReadFromFile complete!\n";
 	return p_root;
 }
 
@@ -182,6 +192,8 @@ int TwoPower(int n) {
 }
 
 vector<string> String_getSubString(string s) {
+	if (LOG_STATUS)
+		cout << "String_getSubString working...\n";
 	int subBits = TwoPower(s.length()); // 2^n
 	vector<string> result;
 	if (!s.empty()) {
@@ -194,6 +206,8 @@ vector<string> String_getSubString(string s) {
 				result.push_back(data);
 		}
 	}
+	if (LOG_STATUS)
+		cout << "String_getSubString complete! Got: " << result.size() << " sub strings\n";
 	return result;
 }
 
@@ -214,10 +228,17 @@ void String_permutation(string data, vector<string>& result, string tmp, bool* c
 }
 
 vector<string> String_Generator(string s) {
+	if (LOG_STATUS)
+		cout << "String_Generator working...\n";
+
 	vector<string> subArr = String_getSubString(s);
 	vector<string> res;
 	if (!subArr.empty()) {
+		int count = 0;
 		for (string s : subArr) {
+			++count;
+			if (LOG_STATUS)
+				cout << "Permuting " << count << " sub string...";
 			if (s.length() >= 3) {
 				bool* checker = new bool[s.length()];
 				for (int i = 0; i < s.length(); ++i)
@@ -231,22 +252,34 @@ vector<string> String_Generator(string s) {
 							res.push_back(s);
 				delete[] checker;
 			}
+			if (LOG_STATUS)
+				cout << "==> complete!\n";
 		}
 	}
+	if (LOG_STATUS)
+		cout << "String_Generator complete!\n";
 	return res;
 }
 
 bool isExist(string s, vector<string> arr) {
+	if (LOG_STATUS)
+		cout << "Checking in array....";
 	for (string a : arr)
 		if (s == a)
 			return true;
+	if (LOG_STATUS)
+		cout << "=> complete!\n";
 	return false;
 }
 
 string RemoveSpace(string line) {
+	if (LOG_STATUS)
+		cout << "RemoveSpace working...\n";
 	string s;
 	for (char c : line)
 		if (c != ' ')
 			s.push_back(c);
+	if (LOG_STATUS)
+		cout << "RemoveSpace complete!\n";
 	return s;
 }
