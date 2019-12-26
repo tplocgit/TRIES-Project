@@ -56,7 +56,12 @@ int main() {
 	vector<string> gen;
 	string tmp;
 	vector<bool> checker(data.length(), true);
-	cc(p_root, data, gen, tmp,checker);
+	cc(p_root, data, gen, tmp, checker);
+	cout << gen.size() << endl;
+	if (!gen.empty())
+		for (string s : gen)
+			cout << s << endl;
+	gen = Tree_GenerateWord(p_root, data);
 	cout << gen.size() << endl;
 	if (!gen.empty())
 		for (string s : gen)
