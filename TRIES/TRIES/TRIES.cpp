@@ -46,6 +46,10 @@ bool isExist(string s, vector<string> arr);
 string RemoveSpace(string line);
 
 void cc(NODE* p_root, string data, vector<string>& result, string tmp, vector<bool> checker);
+
+void Tree_RadixSort(vector<string>& data);
+
+void Tree_CountingSort(vector<string>& data, int exp);
 //--------------------------------------------------------------------
 
 int main() {
@@ -58,14 +62,18 @@ int main() {
 	vector<bool> checker(data.length(), true);
 	cc(p_root, data, gen, tmp, checker);
 	cout << gen.size() << endl;
-	if (!gen.empty())
+	if (!gen.empty()) {
+		Tree_RadixSort(gen);
 		for (string s : gen)
 			cout << s << endl;
+	}
 	gen = Tree_GenerateWord(p_root, data);
 	cout << gen.size() << endl;
-	if (!gen.empty())
+	if (!gen.empty()) {
+		//Tree_RadixSort(gen);
 		for (string s : gen)
 			cout << s << endl;
+	}
 	Tree_Deallocate(p_root);
 	system("pause");
 	return 0;
@@ -305,4 +313,46 @@ void cc(NODE* p_root, string data, vector<string>& result, string tmp, vector<bo
 			}
 		}
 	}
+}
+
+void Tree_RadixSort(vector<string>& data) {
+	int max = data.front().length();
+	for (auto it = data.begin() + 1; it != data.end(); ++it) {
+		if (it->length() > max)
+			max = it->length();
+	}
+	for (int i = 1; i <= max; ++i)
+		Tree_CountingSort(data, i);
+}
+
+void Tree_CountingSort(vector<string>& data, int exp) {
+	vector<int> count(ALPHABET_CHARS, 0);
+	vector<string> tmp(data.size());
+
+	for (auto it = data.begin(); it != data.end(); ++it) {
+		if (int(it->length()) - exp > 0) {
+			int i = (*it)[it->length() - exp - 1] - 'a' + 1;
+			count[i]++;
+		}
+		else
+			count[0]++;
+	}
+
+	for (int i = 1; i < ALPHABET_CHARS; ++i) {
+		int j = i - 1;
+		count[i] += count[j];
+	}
+
+	for (auto it = data.rbegin(); it != data.rend(); ++it) {
+		if (int(it->length()) - exp > 0) {
+			int i = (*it)[it->length() - exp - 1] - 'a' + 1;
+			tmp[--count[i]] = *it;
+		}
+		else {
+			tmp[--count[0]] = *it;
+		}
+	}
+
+	for (int i = 0; i < data.size(); i++)
+		data[i] = tmp[i];
 }
