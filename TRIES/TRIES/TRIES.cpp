@@ -6,7 +6,7 @@
 using namespace std;
 #define ALPHABET_CHARS 26
 #define MAX_LENGTH 10
-#define  LOG_STATUS false
+#define LOG_STATUS false
 
 // Each node contains hash table with hash function h(k) = k - 97;
 //--------------------------------------------------------------------
@@ -17,8 +17,6 @@ struct NODE {
 
 int Tree_getIndex(char c);
 
-char Tree_getChar(int index);
-
 NODE* Tree_createNODE();
 
 void Tree_InsertWord(NODE*& p_root, string word);
@@ -27,25 +25,11 @@ NODE* Tree_ReadFromFile(string path);
 
 void Tree_Deallocate(NODE*& p_root);
 
-vector<string> Tree_GenerateWord(NODE* p_root, string data);
-
-void Tree_GetStrings(NODE* p_root, vector<string>& result, string word);
-
-bool Tree_IsAvailable(string word, NODE* p_root);
-
-int TwoPower(int n);
-
-vector<string> String_getSubString(string s);
-
-void String_permutation(string data, vector<string>& result, string tmp, bool* checker);
-
-vector<string> String_Generator(string s);
-
 bool isExist(string s, vector<string> arr);
 
 string RemoveSpace(string line);
 
-void cc(NODE* p_root, string data, vector<string>& result, string tmp, vector<bool> checker);
+void Tree_GenerateWord(NODE* p_root, string data, vector<string>& result, string tmp, vector<bool> checker);
 
 void Tree_RadixSort(vector<string>& data);
 
@@ -53,44 +37,23 @@ void Tree_CountingSort(vector<string>& data, int exp);
 //--------------------------------------------------------------------
 
 int main() {
-	NODE* p_root = Tree_ReadFromFile("dic.txt");
+	NODE* p_root = Tree_ReadFromFile("Dic.txt");
 	string line;
 	getline(cin, line, '\n');
 	string data = RemoveSpace(line);
 	vector<string> gen;
 	string tmp;
 	vector<bool> checker(data.length(), true);
-	cc(p_root, data, gen, tmp, checker);
+	Tree_GenerateWord(p_root, data, gen, tmp, checker);
 	cout << gen.size() << endl;
 	if (!gen.empty()) {
 		Tree_RadixSort(gen);
 		for (string s : gen)
 			cout << s << endl;
 	}
-	gen = Tree_GenerateWord(p_root, data);
-	cout << gen.size() << endl;
-	if (!gen.empty()) {
-		//Tree_RadixSort(gen);
-		for (string s : gen)
-			cout << s << endl;
-	}
 	Tree_Deallocate(p_root);
 	system("pause");
 	return 0;
-}
-
-vector<string> Tree_GenerateWord(NODE* p_root, string data) {
-	if (LOG_STATUS) {
-		cout << "Tree_GenerateWord working...\n";
-	}
-	vector<string> gen = String_Generator(data);
-	vector<string> res;
-	for (auto it = gen.begin(); it != gen.end(); ++it)
-		if (Tree_IsAvailable(*it, p_root))
-			res.push_back(*it);
-	if (LOG_STATUS)
-		cout << "Tree_GenerateWord complete!\n";
-	return res;
 }
 
 void Tree_Deallocate(NODE*& p_root) {
@@ -112,15 +75,6 @@ int Tree_getIndex(char c) {
 	else
 		res = -1;
 	return res;
-}
-
-char Tree_getChar(int index) {
-	char c;
-	if (0 <= index && index <= 25)
-		c = index + 'a';
-	else
-		c = '\0';
-	return c;
 }
 
 NODE* Tree_createNODE() {
@@ -165,110 +119,6 @@ NODE* Tree_ReadFromFile(string path) {
 	return p_root;
 }
 
-void Tree_GetStrings(NODE* p_root, vector<string>& result, string word) {
-	if (p_root) {
-		for (int i = 0; i < ALPHABET_CHARS; ++i) {
-			if (p_root->m_nodes[i]) {
-				char c = Tree_getChar(i);
-				word.push_back(c);
-				if (p_root->m_nodes[i]->m_endWord)
-					result.push_back(word);
-				Tree_GetStrings(p_root->m_nodes[i], result, word);
-				word.pop_back();
-			}
-		}
-	}
-}
-
-bool Tree_IsAvailable(string word, NODE* p_root) {
-	if (p_root && word.empty() && p_root->m_endWord)
-		return true;
-	else if (!p_root || word.empty())
-		return false;
-	int index = Tree_getIndex(word.front());
-	if (p_root && p_root->m_nodes[index]) {
-		return Tree_IsAvailable(word.substr(1, word.length() - 1), p_root->m_nodes[index]);
-	}
-	return false;
-}
-
-int TwoPower(int n) {
-	int subBits = 0;
-	for (int i = 0; i < n; ++i)
-		subBits |= 1 << i;
-	return subBits + 1;
-}
-
-vector<string> String_getSubString(string s) {
-	if (LOG_STATUS)
-		cout << "String_getSubString working...\n";
-	int subBits = TwoPower(s.length()); // 2^n
-	vector<string> result;
-	if (!s.empty()) {
-		for (int i = 0; i < subBits; ++i) {
-			string data;
-			for (int j = 0; j < s.length(); ++j)
-				if ((i >> j) & 1)
-					data.push_back(s[j]);
-			if (!data.empty())
-				result.push_back(data);
-		}
-	}
-	if (LOG_STATUS)
-		cout << "String_getSubString complete! Got: " << result.size() << " sub strings\n";
-	return result;
-}
-
-void String_permutation(string data, vector<string>& result, string tmp, bool* checker) {
-	if (tmp.size() == data.size()) {
-		result.push_back(tmp);
-		return;
-	}
-	for (int i = 0; i < data.size(); ++i) {
-		if (checker[i]) {
-			checker[i] = false;
-			tmp.push_back(data[i]);
-			String_permutation(data, result, tmp, checker);
-			checker[i] = true;
-			tmp.pop_back();
-		}
-	}
-}
-
-vector<string> String_Generator(string s) {
-	if (LOG_STATUS)
-		cout << "String_Generator working...\n";
-
-	vector<string> subArr = String_getSubString(s);
-	vector<string> res;
-	if (!subArr.empty()) {
-		int count = 0;
-		for (string s : subArr) {
-			++count;
-			if (LOG_STATUS)
-				cout << "Permuting " << count << "th sub string...";
-			if (s.length() >= 3) {
-				bool* checker = new bool[s.length()];
-				for (int i = 0; i < s.length(); ++i)
-					checker[i] = true;
-				vector<string> subRes;
-				string tmp;
-				String_permutation(s, subRes, tmp, checker);
-				if (!subRes.empty())
-					for (string s : subRes)
-						if (!isExist(s, res))
-							res.push_back(s);
-				delete[] checker;
-			}
-			if (LOG_STATUS)
-				cout << "==> complete!\n";
-		}
-	}
-	if (LOG_STATUS)
-		cout << "String_Generator complete!\n";
-	return res;
-}
-
 bool isExist(string s, vector<string> arr) {
 	if (LOG_STATUS)
 		cout << "Checking " << s << " in array....";
@@ -287,15 +137,18 @@ string RemoveSpace(string line) {
 	if (LOG_STATUS)
 		cout << "RemoveSpace working...\n";
 	string s;
-	for (char c : line)
+	for (char c : line) {
 		if ('a' <= c && c <= 'z')
 			s.push_back(c);
+		else if ('A' <= c && c <= 'Z')
+			s.push_back(c + ' ');
+	}
 	if (LOG_STATUS)
 		cout << "RemoveSpace complete!\n";
 	return s;
 }
 
-void cc(NODE* p_root, string data, vector<string>& result, string tmp, vector<bool> checker) {
+void Tree_GenerateWord(NODE* p_root, string data, vector<string>& result, string tmp, vector<bool> checker) {
 	if (p_root) {
 		for (auto it = data.begin(); it != data.end(); ++it) {
 			int i = Tree_getIndex(*it);
@@ -307,7 +160,7 @@ void cc(NODE* p_root, string data, vector<string>& result, string tmp, vector<bo
 					if (!isExist(tmp, result))
 						result.push_back(tmp);
 				}
-				cc(p_root->m_nodes[i], data, result, tmp, checker);
+				Tree_GenerateWord(p_root->m_nodes[i], data, result, tmp, checker);
 				tmp.pop_back();
 				checker[j] = true;
 			}
@@ -331,7 +184,9 @@ void Tree_CountingSort(vector<string>& data, int exp) {
 
 	for (auto it = data.begin(); it != data.end(); ++it) {
 		if (int(it->length()) - exp > 0) {
-			int i = (*it)[it->length() - exp - 1] - 'a' + 1;
+			int i = (*it)[int(it->length() - exp) - 1] - 'a' + 1;
+			if (i >= 26)
+				i--;
 			count[i]++;
 		}
 		else
@@ -345,7 +200,9 @@ void Tree_CountingSort(vector<string>& data, int exp) {
 
 	for (auto it = data.rbegin(); it != data.rend(); ++it) {
 		if (int(it->length()) - exp > 0) {
-			int i = (*it)[it->length() - exp - 1] - 'a' + 1;
+			int i = (*it)[int(it->length() - exp) - 1] - 'a' + 1;
+			if (i >= 26)
+				i--;
 			tmp[--count[i]] = *it;
 		}
 		else {
